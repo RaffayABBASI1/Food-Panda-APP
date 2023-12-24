@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../actions/userActions";
 import Error from "../components/Error";
 import Loading from "../components/Loading";
+import GoogleLogin from "react-google-login"; // Import Google login component
 
 export default function Loginscreen() {
   const [email, setemail] = useState("");
@@ -21,6 +22,25 @@ export default function Loginscreen() {
     const user = { email, password };
     dispatch(loginUser(user));
   }
+
+  const responseGoogle = (response) => {
+    try {
+      if (response.error) {
+        console.error('Google login error:', response.error);
+        // Handle Google login error if needed
+      } else {
+        console.log(response); // Handle the Google login response here
+        const user = {
+          email: response.profileObj.email,
+          // Add more fields if needed from the response
+        };
+        dispatch(loginUser(user)); // Dispatch action to log in the user
+      }
+    } catch (error) {
+      console.error('Error while handling Google login:', error);
+      // Handle error or show a friendly message to the user
+    }
+  };
 
   return (
     <div>
@@ -56,6 +76,14 @@ export default function Loginscreen() {
             <button onClick={login} className="btn mt-3 mb-3">
               Login
             </button>
+            <br />
+            <GoogleLogin
+              clientId="925060961358-01u1kgktag1nni3sakfn7hqt6p5f6fj4.apps.googleusercontent.com"
+              buttonText="Login with Google"
+              onSuccess={responseGoogle}
+              onFailure={responseGoogle} // Handle failure if needed
+              cookiePolicy={"single_host_origin"}
+            />
             <br />
             <a style={{ color: 'black' }} href="/register" className="m-2">
               Click here to Register
